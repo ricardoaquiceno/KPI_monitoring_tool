@@ -3,13 +3,16 @@ package mydb
 import (
 	"context"
 	"fmt"
-	"github.com/InfluxCommunity/influxdb3-go/influxdb3"
-	"github.com/apache/arrow/go/v15/arrow"
 	"gopacket_analysis/models"
 	"time"
+
+	"github.com/InfluxCommunity/influxdb3-go/influxdb3"
+	"github.com/apache/arrow/go/v15/arrow"
 )
 
-const token = "SSdhooCZ58xz2ipWbvsymsgXLVS2qnD3xlxnV3JVcIrPocXPRIu3aJ6D2AulCzxIbdUsveSOVTrKaGcyyWohpA=="
+// ik token
+// const token = "SSdhooCZ58xz2ipWbvsymsgXLVS2qnD3xlxnV3JVcIrPocXPRIu3aJ6D2AulCzxIbdUsveSOVTrKaGcyyWohpA=="
+const token = "40e954imsfRURfnSxuxz1iuQwtQdI-Z4kJyw0vkR5731PDWdZ4mppFPS4WWMSSgipmz-2TSrV30xO3ta1rPIZA=="
 
 func writeDummy() {
 	// Create client
