@@ -690,13 +690,13 @@ func pcapRunner(filterName string, bpfFilter string, printStats bool) {
 			}
 			device := config.InfluxV1.TestDevice + "_" + remoteText
 
-			// tags := map[string]string{"filter": filterName, "device": device}
-			tags := map[string]string{
-				"filter": filterName,
-				"device": device,
-				"src_ip": srcIP.String(), // Add Source IP
-				"dst_ip": dstIP.String(), // (Optional) Add Destination IP
-			}
+			tags := map[string]string{"filter": filterName, "device": device}
+			// tags := map[string]string{
+			// 	"filter": filterName,
+			// 	"device": device,
+			// 	"src_ip": srcIP.String(), // Add Source IP
+			// 	"dst_ip": dstIP.String(), // (Optional) Add Destination IP
+			// }
 			fields := map[string]interface{}{
 				"packetsOut":        flowPacketsOut,
 				"packetsIn":         flowPacketsIn,
