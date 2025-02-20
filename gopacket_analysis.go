@@ -2,10 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/layers"
-	"github.com/google/gopacket/pcap"
-	"github.com/google/gopacket/pcapgo"
 	"gopacket_analysis/config"
 	"gopacket_analysis/helpers"
 	"gopacket_analysis/models"
@@ -21,6 +17,11 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/google/gopacket"
+	"github.com/google/gopacket/layers"
+	"github.com/google/gopacket/pcap"
+	"github.com/google/gopacket/pcapgo"
 )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,12 +68,13 @@ func pcapInit(bpfFilter string) (*gopacket.PacketSource, error) {
 
 		bpfFilter = strings.ReplaceAll(bpfFilter, "(", "'(")
 		bpfFilter = strings.ReplaceAll(bpfFilter, ")", ")'")
-		tcpdumpCommand := "sudo tcpdump -i eth0 -n --immediate-mode -s 160 -U -w - -p " + bpfFilter
+		tcpdumpCommand := "echo 'fwclient' | sudo -S tcpdump -i ens21 -n --immediate-mode -s 160 -U -w - -p " + bpfFilter
 
 		if config.Pcap.SSHUsePubkey {
-			sshCommand = exec.Command("ssh", "-i", config.Pcap.SSHPubkeyLocation, "nikilase@192.168.1.1", tcpdumpCommand)
+			// sshCommand = exec.Command("ssh", "-i", config.Pcap.SSHPubkeyLocation, "fwclient@10.0.2.110", tcpdumpCommand)
+			sshCommand = exec.Command("ssh", "fwclient@10.0.2.110", tcpdumpCommand)
 		} else {
-			sshCommand = exec.Command("ssh", "nikilase@192.168.1.1", tcpdumpCommand)
+			sshCommand = exec.Command("ssh", "fwclient@10.0.2.110", tcpdumpCommand)
 		}
 
 		sshCommand.Stdout = wStdout
@@ -82,11 +84,12 @@ func pcapInit(bpfFilter string) (*gopacket.PacketSource, error) {
 			return nil, err
 		}
 		fmt.Println(sshCommand.String())
+
 		reader, err := pcapgo.NewReader(rStdout)
 		if err != nil {
 			return nil, err
 		}
-
+		println("sali de la config")
 		packetSource := gopacket.NewPacketSource(reader, layers.LinkTypeEthernet)
 		packetSource.Lazy = true
 		packetSource.NoCopy = true
@@ -122,6 +125,7 @@ func pcapRunner(filterName string, bpfFilter string, printStats bool) {
 
 	// Create packet source
 	packetSource, psErr := pcapInit(bpfFilter)
+
 	if psErr != nil {
 		log.Fatal(psErr)
 	}
@@ -686,7 +690,13 @@ func pcapRunner(filterName string, bpfFilter string, printStats bool) {
 			}
 			device := config.InfluxV1.TestDevice + "_" + remoteText
 
-			tags := map[string]string{"filter": filterName, "device": device}
+			// tags := map[string]string{"filter": filterName, "device": device}
+			tags := map[string]string{
+				"filter": filterName,
+				"device": device,
+				"src_ip": srcIP.String(), // Add Source IP
+				"dst_ip": dstIP.String(), // (Optional) Add Destination IP
+			}
 			fields := map[string]interface{}{
 				"packetsOut":        flowPacketsOut,
 				"packetsIn":         flowPacketsIn,
